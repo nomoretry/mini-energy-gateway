@@ -9,6 +9,8 @@ Inverter / simulator --Modbus TCP--> Gateway --HTTP GET /api/measurements--> cli
                                         └------MQTT solar/inverter01/readings--> Mosquitto --> subscribers
 ```
 
+**New here?** Read the [User Guide](docs/USER_GUIDE.md): installation, running, checks, troubleshooting and our Git workflow.
+
 ## Tasks
 
 | Task | Where |
