@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections.abc import Sequence
 
 from pymodbus.client import ModbusTcpClient
@@ -55,7 +56,10 @@ class ModbusReader:
         )
         if response.isError():
             raise ModbusReadError(f"{reg.name} @ {reg.address:#06x}: {response}")
-        return decode(reg, response.registers)
+        value = decode(reg, response.registers)
+        if not math.isfinite(value):  # NaN or infinity must never reach REST or MQTT
+            raise ModbusReadError(f"{reg.name} @ {reg.address:#06x}: invalid value {value}")
+        return value
 
     def close(self) -> None:
         self._client.close()

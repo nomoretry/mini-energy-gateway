@@ -30,6 +30,7 @@ class Settings:
     # REST API
     http_host: str = "127.0.0.1"
     http_port: int = 8000
+    api_key: str | None = None  # if set, clients must send it in the X-API-Key header
 
     @property
     def readings_topic(self) -> str:
@@ -55,4 +56,5 @@ class Settings:
             publish_interval_s=float(env("PUBLISH_INTERVAL_S", cls.publish_interval_s)),
             http_host=env("HTTP_HOST", cls.http_host),
             http_port=int(env("HTTP_PORT", cls.http_port)),
+            api_key=env("API_KEY") or None,
         )

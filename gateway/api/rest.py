@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+import secrets
+
+from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi.security import APIKeyHeader
 
 from ..services.store import MeasurementStore
 
@@ -14,15 +17,28 @@ _EXAMPLE = {
     "status": "ok",
 }
 
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-def build_router(store: MeasurementStore) -> APIRouter:
-    router = APIRouter(prefix="/api", tags=["measurements"])
+
+def build_router(store: MeasurementStore, api_key: str | None = None) -> APIRouter:
+    """Create the /api routes. If api_key is given, every request must carry it
+    in the X-API-Key header; without it the API is open."""
+
+    def require_api_key(provided: str | None = Security(_api_key_header)) -> None:
+        if api_key is None:
+            return
+        # compare_digest: constant-time comparison, does not leak how many characters match
+        if provided is None or not secrets.compare_digest(provided.encode(), api_key.encode()):
+            raise HTTPException(status_code=401, detail="Missing or invalid API key")
+
+    router = APIRouter(prefix="/api", tags=["measurements"], dependencies=[Depends(require_api_key)])
 
     @router.get(
         "/measurements",
         summary="Latest inverter readings",
         responses={
             200: {"content": {"application/json": {"example": _EXAMPLE}}},
+            401: {"description": "Missing or invalid API key (only if API_KEY is configured)"},
             503: {"description": "No reading has been acquired from the inverter yet"},
         },
     )

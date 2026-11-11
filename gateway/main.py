@@ -54,7 +54,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version="1.0.0",
         lifespan=lifespan,
     )
-    app.include_router(build_router(store))
+    app.include_router(build_router(store, settings.api_key))
+    if settings.api_key is None:
+        logging.getLogger(__name__).warning("API_KEY is not set: the REST API is open to every client")
     return app
 
 
