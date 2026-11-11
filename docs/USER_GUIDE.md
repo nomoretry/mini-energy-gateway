@@ -35,7 +35,7 @@ Before the first successful read the REST API answers with HTTP 503.
 
 | Tool | Version | Notes |
 |---|---|---|
-| Python | 3.11 or newer | `python --version` |
+| Python | 3.11 or newer | `python --version`. Developed and tested on Python 3.12; the code uses no 3.12-only features, but it has not been run on 3.11 yet. |
 | Git | any recent | `git --version` |
 | Mosquitto | 2.x | MQTT broker, <https://mosquitto.org/download/>. On Windows the installer registers it as a service that listens on port 1883. |
 
@@ -138,16 +138,35 @@ MODBUS_PORT=502 python -m gateway
 
 ## 7. Using ModRSsim2 or diagslave instead of our simulator
 
-1. Start the simulator in Modbus TCP mode. Both tools use port 502, so set `MODBUS_PORT=502`.
-2. Put the values into **holding registers**.
-3. Mind the address offset: the exercise gives zero-based addresses. `0x0010` is address 16, shown as **40017** in ModRSsim2; `0x0020` is address 32, shown as **40033**.
-4. The gateway expects a 32-bit float in two registers, high word first. If your simulator stores a 16-bit integer instead, change the entry in `gateway/hal/register_map.py`, for example:
+These simulators start with all registers at 0 and do not change them on their own, so you have to write test values first.
+
+**diagslave** (command line, <https://www.modbusdriver.com/diagslave.html>):
+
+```bash
+# Terminal 1: start diagslave as Modbus TCP server on port 502
+diagslave -m tcp
+
+# Terminal 2: write test values (DC voltage 612.5 V, AC power 4870 W)
+python simulator/set_registers.py 612.5 4870
+
+# Terminal 2: start the gateway against port 502
+#   Windows PowerShell:  $env:MODBUS_PORT = "502"; python -m gateway
+#   Linux / macOS:       MODBUS_PORT=502 python -m gateway
+```
+
+<http://localhost:8000/api/measurements> must then show `"dc_voltage_v": 612.5` and `"ac_power_w": 4870.0`. Run `set_registers.py` again with other numbers and the output follows within 5 seconds.
+
+**ModRSsim2** (Windows GUI): choose *Modbus TCP/IP*, then either run `set_registers.py` as above or type the values by hand.
+
+Notes for both tools:
+
+- The values live in **holding registers**.
+- Mind the address offset: the exercise gives zero-based addresses. `0x0010` is address 16, shown as **40017** in ModRSsim2; `0x0020` is address 32, shown as **40033**.
+- The gateway expects a 32-bit float in two registers, high word first. If you store a 16-bit integer instead, change the entry in `gateway/hal/register_map.py`, for example:
 
 ```python
 Register(name="dc_voltage_v", address=0x0010, unit="V", data_type="uint16", scale=0.1, decimals=1)
 ```
-
-This combination has not been tested yet.
 
 ## 8. How the code is organised
 
