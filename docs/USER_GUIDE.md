@@ -156,7 +156,9 @@ python simulator/set_registers.py 612.5 4870
 
 <http://localhost:8000/api/measurements> must then show `"dc_voltage_v": 612.5` and `"ac_power_w": 4870.0`. Run `set_registers.py` again with other numbers and the output follows within 5 seconds.
 
-**ModRSsim2** (Windows GUI): choose *Modbus TCP/IP*, then either run `set_registers.py` as above or type the values by hand.
+Tested on 11 November 2026 with diagslave 3.5 on Windows: REST and MQTT returned exactly the written values, and changed values appeared after the next poll.
+
+**ModRSsim2** (Windows GUI): choose *Modbus TCP/IP*, then either run `set_registers.py` as above or type the values by hand. Not tested yet.
 
 Notes for both tools:
 
