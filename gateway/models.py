@@ -23,7 +23,7 @@ class Measurement:
         return replace(self, status=status)
 
     def to_dict(self) -> dict:
-        """JSON payload used by both the REST API and MQTT (FR-11)."""
+        """JSON payload used by both the REST API and MQTT."""
         return {
             "device_id": self.device_id,
             "timestamp": self.timestamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

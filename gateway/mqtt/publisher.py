@@ -37,7 +37,7 @@ class MqttPublisher:
         self._client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         if username:
             self._client.username_pw_set(username, password)
-        # Last will: the broker announces "offline" if the gateway dies (FR-14).
+        # Last will: the broker announces "offline" if the gateway dies.
         self._client.will_set(status_topic, "offline", qos=1, retain=True)
         self._client.reconnect_delay_set(min_delay=1, max_delay=10)
         self._client.on_connect = self._on_connect
@@ -48,7 +48,7 @@ class MqttPublisher:
 
     def start(self) -> None:
         # connect_async + loop_start: paho connects and reconnects in its own
-        # thread, so the gateway also starts while the broker is down (NFR-04).
+        # thread, so the gateway also starts while the broker is down.
         self._client.connect_async(self._host, self._port, keepalive=30)
         self._client.loop_start()
         self._thread.start()

@@ -1,4 +1,4 @@
-# Mini Energy Gateway – User Guide
+# Mini Energy Gateway: User Guide
 
 This guide explains how to install, run and check the gateway, how the code is organised, and how we work on it together.
 
@@ -67,7 +67,7 @@ pip install -r requirements.txt
 
 Open three terminals in the project folder and activate the virtual environment in each.
 
-**Terminal 1 – inverter simulator**
+**Terminal 1 - inverter simulator**
 
 ```bash
 python simulator/inverter_sim.py
@@ -75,7 +75,7 @@ python simulator/inverter_sim.py
 
 Expected output: `Inverter simulator listening on 127.0.0.1:5020 (unit id 1)`
 
-**Terminal 2 – gateway**
+**Terminal 2 - gateway**
 
 ```bash
 python -m gateway
@@ -83,7 +83,7 @@ python -m gateway
 
 Expected output: `Modbus read ok: {...}`, `MQTT connected to 127.0.0.1:1883` and `Uvicorn running on http://127.0.0.1:8000`
 
-**Terminal 3 – watch the MQTT messages**
+**Terminal 3 - watch the MQTT messages**
 
 ```bash
 mosquitto_sub -h localhost -t "solar/#" -v
@@ -186,16 +186,16 @@ The code follows the layered architecture described in `Mini_Energy_Gateway_Requ
 
 | Layer | File | Responsibility |
 |---|---|---|
-| 4 – Application | `gateway/api/rest.py` | REST endpoint (Task 4) |
-| 4 – Application | `gateway/mqtt/publisher.py` | MQTT publisher (Task 5) |
-| 3 – Service | `gateway/services/poller.py` | Reads the inverter every 5 s |
-| 3 – Service | `gateway/services/store.py` | Holds the latest measurement for REST and MQTT |
-| 2 – HAL | `gateway/hal/modbus_reader.py` | Modbus TCP client (Task 3) |
-| 2 – HAL | `gateway/hal/register_map.py` | Register addresses, data types, decoding |
-| – | `gateway/config.py`, `gateway/models.py` | Settings and the `Measurement` data model |
-| – | `gateway/main.py` | Creates the components and connects them |
+| 4 - Application | `gateway/api/rest.py` | REST endpoint (Task 4) |
+| 4 - Application | `gateway/mqtt/publisher.py` | MQTT publisher (Task 5) |
+| 3 - Service | `gateway/services/poller.py` | Reads the inverter every 5 s |
+| 3 - Service | `gateway/services/store.py` | Holds the latest measurement for REST and MQTT |
+| 2 - HAL | `gateway/hal/modbus_reader.py` | Modbus TCP client (Task 3) |
+| 2 - HAL | `gateway/hal/register_map.py` | Register addresses, data types, decoding |
+| - | `gateway/config.py`, `gateway/models.py` | Settings and the `Measurement` data model |
+| - | `gateway/main.py` | Creates the components and connects them |
 
-Data flow: `Poller` → `ModbusReader.read()` → `MeasurementStore.update()`. The REST API and the MQTT publisher only call `MeasurementStore.get_latest()`; they never talk to Modbus.
+Data flow: `Poller` -> `ModbusReader.read()` -> `MeasurementStore.update()`. The REST API and the MQTT publisher only call `MeasurementStore.get_latest()`; they never talk to Modbus.
 
 To add a measurement, add one `Register(...)` line to `REGISTER_MAP`. It then appears in the REST response and the MQTT payload without further changes.
 

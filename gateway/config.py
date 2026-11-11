@@ -1,7 +1,7 @@
 """Cross-cutting: deployment settings, read from environment variables.
 
 Every value has a default that works with the bundled simulator, so the
-gateway starts without any configuration (NFR-08).
+gateway starts without any configuration.
 """
 
 from __future__ import annotations

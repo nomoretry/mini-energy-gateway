@@ -43,7 +43,7 @@ def build_router(store: MeasurementStore, api_key: str | None = None) -> APIRout
         },
     )
     def get_measurements() -> dict:
-        # Served from the store: a request never waits for a Modbus read (NFR-01).
+        # Served from the store: a request never waits for a Modbus read.
         measurement = store.get_latest()
         if measurement is None:
             raise HTTPException(status_code=503, detail="No measurement available yet")

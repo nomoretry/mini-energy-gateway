@@ -1,7 +1,7 @@
 """Register map of the inverter and decoding of raw register words.
 
 To add a measurement or adapt to another device, edit REGISTER_MAP only;
-no other module knows register addresses or encodings (NFR-07).
+no other module knows register addresses or encodings.
 """
 
 from __future__ import annotations

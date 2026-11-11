@@ -24,7 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # pymodbus logs every failed connection attempt; the Poller already logs state changes.
     logging.getLogger("pymodbus").setLevel(logging.CRITICAL)
 
-    # Data is "stale" once three poll cycles in a row have been missed (FR-13).
+    # Data is "stale" once three poll cycles in a row have been missed.
     store = MeasurementStore(stale_after_s=3 * settings.poll_interval_s)
     reader = ModbusReader(settings.modbus_host, settings.modbus_port, settings.modbus_unit_id)
     poller = Poller(reader, store, settings.device_id, settings.poll_interval_s)

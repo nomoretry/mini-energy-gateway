@@ -1,7 +1,7 @@
 """Thread-safe holder of the latest measurement.
 
 Single source of truth for the REST API and the MQTT publisher: both read
-from here, so neither depends on Modbus timing or on the other (NFR-04).
+from here, so neither depends on Modbus timing or on the other.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ class MeasurementStore:
 
     def get_latest(self) -> Measurement | None:
         """Return the latest measurement with its current status, or None if
-        nothing has been read yet (FR-09, FR-13)."""
+        nothing has been read yet."""
         with self._lock:
             if self._latest is None:
                 return None

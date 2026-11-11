@@ -19,7 +19,7 @@ class ModbusReadError(Exception):
 
 
 class ModbusReader:
-    """Read-only Modbus TCP client (function code 0x03 only, NFR-11).
+    """Read-only Modbus TCP client (function code 0x03 only).
 
     The rest of the gateway only calls read() and never sees Modbus details.
     """
@@ -40,7 +40,7 @@ class ModbusReader:
     def read(self) -> dict[str, float]:
         """Read every register of the map and return {name: engineering value}.
 
-        Reconnects automatically if the connection was lost (FR-12).
+        Reconnects automatically if the connection was lost.
         """
         try:
             if not self._client.connected and not self._client.connect():
