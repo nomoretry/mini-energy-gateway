@@ -13,6 +13,8 @@ from ..services.store import MeasurementStore
 
 log = logging.getLogger(__name__)
 
+_START_OFFSET_S = 1.0  # delay of the publish cycle relative to the poll cycle
+
 
 class MqttPublisher:
     def __init__(
@@ -68,11 +70,12 @@ class MqttPublisher:
         return True
 
     def _run(self) -> None:
-        next_publish = time.monotonic()
-        while not self._stop.is_set():
+        # Start shortly after the Poller: both run on the same 5 s cycle, and
+        # without the offset every message would carry the previous cycle's reading.
+        next_publish = time.monotonic() + _START_OFFSET_S
+        while not self._stop.wait(max(0.0, next_publish - time.monotonic())):
             self.publish_once()
             next_publish += self._interval_s
-            self._stop.wait(max(0.0, next_publish - time.monotonic()))
 
     def _on_connect(self, client, userdata, flags, reason_code, properties) -> None:
         if reason_code.is_failure:
