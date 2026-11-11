@@ -9,7 +9,7 @@ Inverter / simulator --Modbus TCP--> Gateway --HTTP GET /api/measurements--> cli
                                         └------MQTT solar/inverter01/readings--> Mosquitto --> subscribers
 ```
 
-**New here?** Read the [User Guide](docs/USER_GUIDE.md): installation, running, checks, troubleshooting and our Git workflow.
+**New here?** Read the [Handover](docs/HANDOVER.md) for the current status and open decisions, then the [User Guide](docs/USER_GUIDE.md) for installation, running, checks, troubleshooting and our Git workflow.
 
 ## Tasks
 
@@ -94,6 +94,7 @@ Set environment variables to override the defaults:
 | `MQTT_USERNAME` / `MQTT_PASSWORD` | – | Broker credentials (optional) |
 | `PUBLISH_INTERVAL_S` | `5` | MQTT publish interval |
 | `HTTP_HOST` / `HTTP_PORT` | `127.0.0.1` / `8000` | REST API address |
+| `API_KEY` | – | If set, REST clients must send it in the `X-API-Key` header (otherwise HTTP 401) |
 | `GATEWAY_DEVICE_ID` | `inverter01` | Used in the payload and the MQTT topic |
 
 The registers are assumed to hold 32-bit floats in two holding registers (high word first). For a simulator that stores 16-bit integers, change `data_type` and `scale` in `gateway/hal/register_map.py`.

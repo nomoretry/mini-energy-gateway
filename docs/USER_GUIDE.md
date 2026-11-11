@@ -105,7 +105,8 @@ Stop each program with `Ctrl+C`.
 | Modbus (Task 3) | Compare REST values with the gateway log | Same values |
 | Fault handling | Stop the simulator (`Ctrl+C` in terminal 1) | `status` becomes `error`, after 15 s `stale` |
 | Recovery | Start the simulator again | `status` returns to `ok` within one poll interval |
-| Unit tests | `pytest` | `13 passed` |
+| API key | Start the gateway with `API_KEY` set, call the API without the header | HTTP 401; with the correct header HTTP 200 |
+| Unit tests | `pytest` | `16 passed` |
 
 ## 6. Configuration
 
@@ -121,7 +122,16 @@ All settings are environment variables; without them the defaults below are used
 | `MQTT_USERNAME` / `MQTT_PASSWORD` | not set | Broker login, if required |
 | `PUBLISH_INTERVAL_S` | `5` | How often a message is published |
 | `HTTP_HOST` / `HTTP_PORT` | `127.0.0.1` / `8000` | Address of the REST API |
+| `API_KEY` | not set | If set, REST clients must send this value in the `X-API-Key` header; otherwise they get HTTP 401. If not set, the API is open and the gateway logs a warning. |
 | `GATEWAY_DEVICE_ID` | `inverter01` | Used in the payload and the MQTT topic |
+
+Calling the API with a key:
+
+```bash
+curl -H "X-API-Key: <your-key>" http://localhost:8000/api/measurements
+```
+
+In the Swagger UI, click **Authorize** and enter the key.
 
 Example for Windows PowerShell, then start the gateway in the same terminal:
 
@@ -194,6 +204,7 @@ To add a measurement, add one `Register(...)` line to `REGISTER_MAP`. It then ap
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | REST returns 503 | The inverter has not been read yet | Start the simulator; check `MODBUS_HOST` / `MODBUS_PORT` |
+| REST returns 401 | `API_KEY` is set and the request has no or a wrong `X-API-Key` header | Send the header, or unset `API_KEY` |
 | `status` is `stale` | The simulator stopped or is unreachable | Restart the simulator |
 | No MQTT messages | Mosquitto is not running | Windows: start the *Mosquitto Broker* service; Linux: `sudo systemctl start mosquitto` |
 | `Address already in use` | Port 8000 or 5020 is taken | Stop the other program or change `HTTP_PORT` / `--port` |
